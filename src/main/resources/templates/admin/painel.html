@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao">
+        <p class="tag">Administração</p>
+        <h1>Painel administrativo</h1>
+        <p class="texto-apoio">Gerencie cadastros operacionais, voos, solicitações de clientes e relatórios comerciais.</p>
+    </div>
+
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+
+    <section class="bloco-tabela">
+        <h2>Gestão do sistema</h2>
+        <div class="cards cards-admin">
+            <article class="card card-link"><a href="/admin/destinos"><h3>Destinos</h3><p>Cidades atendidas pela agência.</p></a></article>
+            <article class="card card-link"><a href="/admin/aeroportos"><h3>Aeroportos</h3><p>Aeroportos vinculados aos destinos.</p></a></article>
+            <article class="card card-link"><a href="/admin/companhias"><h3>Companhias</h3><p>Companhias aéreas cadastradas.</p></a></article>
+            <article class="card card-link"><a href="/admin/voos"><h3>Voos</h3><p>Voos, horários, vagas e preços.</p></a></article>
+            <article class="card card-link"><a href="/admin/relatorios"><h3>Relatórios</h3><p>Análises por companhia, ocupação de voos e demanda por destino.</p></a></article>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

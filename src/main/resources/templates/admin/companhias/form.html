@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modoEdicao ? 'Editar companhia' : 'Nova companhia'} + ' - BrasilTravel Aéreo'">Companhia - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Gestão administrativa</p>
+        <h1 th:text="${modoEdicao ? 'Editar companhia aérea' : 'Nova companhia aérea'}">Nova companhia aérea</h1>
+        <p class="texto-apoio">Informe os dados da companhia aérea utilizada nos cadastros de voos.</p>
+
+        <form class="formulario" th:action="@{/admin/companhias/salvar}" th:object="${companhia}" method="post">
+            <input type="hidden" th:field="*{idCompanhia}">
+
+            <div class="grid-formulario">
+                <div class="campo campo-duplo">
+                    <label for="nome">Nome da companhia</label>
+                    <input id="nome" type="text" th:field="*{nome}" placeholder="Ex.: Azul Linhas Aéreas">
+                    <small th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="codigoIata">Código da companhia</label>
+                    <input id="codigoIata" type="text" th:field="*{codigoIata}" maxlength="3" placeholder="Ex.: AD">
+                    <small th:if="${#fields.hasErrors('codigoIata')}" th:errors="*{codigoIata}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="telefone">Telefone</label>
+                    <input id="telefone" type="text" th:field="*{telefone}" placeholder="Ex.: 0800 000 0000">
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="site">Site</label>
+                    <input id="site" type="text" th:field="*{site}" placeholder="Ex.: https://www.companhia.com.br">
+                </div>
+
+                <div class="campo campo-checkbox">
+                    <label>Status</label>
+                    <label class="check-label">
+                        <input type="checkbox" th:field="*{ativo}">
+                        Companhia ativa
+                    </label>
+                </div>
+            </div>
+
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Salvar companhia</button>
+                <a class="btn btn-secundario" href="/admin/companhias">Voltar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detalhe da Solicitação - BrasilTravel Aéreo</title><link rel="stylesheet" th:href="@{/css/estilo.css}"></head>
+<body>
+<header th:replace="~{fragments/layout :: topo}"></header>
+<main class="container secao">
+    <div class="titulo-secao linha-titulo"><div><p class="tag">Detalhe da solicitação</p><h1 th:text="${'Solicitação #' + solicitacao.idSolicitacao}">Solicitação</h1><p class="texto-apoio">Resumo dos voos, quantidade de passageiros e valor total.</p></div><a class="btn btn-secundario" href="/cliente/solicitacoes">Voltar</a></div>
+    <section class="cards cards-perfil"><article class="card"><h3>Dados gerais</h3><dl class="lista-dados"><dt>Destino</dt><dd th:text="${solicitacao.destinoPrincipal.nomeCompleto}"></dd><dt>Status</dt><dd th:text="${solicitacao.statusSolicitacao.descricao}"></dd><dt>Data ida</dt><dd th:text="${#temporals.format(solicitacao.dataIda, 'dd/MM/yyyy')}"></dd><dt>Data volta</dt><dd th:text="${solicitacao.dataVolta != null ? #temporals.format(solicitacao.dataVolta, 'dd/MM/yyyy') : 'Não informada'}"></dd><dt>Valor total</dt><dd th:text="${'R$ ' + #numbers.formatDecimal(solicitacao.valorTotal, 1, 'POINT', 2, 'COMMA')}"></dd><dt>Observações</dt><dd th:text="${solicitacao.observacoes ?: 'Sem observações'}"></dd></dl></article></section>
+    
+    <div class="info-sac" th:if="${solicitacao.statusSolicitacao.name() == 'CONFIRMADA' or solicitacao.statusSolicitacao.name() == 'FINALIZADA'}">
+        Esta solicitação não pode ser cancelada pelo site. Para alterações ou cancelamento, entre em contato com o SAC: (47) 3433-0000.
+    </div>
+<section class="bloco-tabela"><h2>Voos da solicitação</h2><div class="tabela-responsiva"><table><thead><tr><th>Trecho</th><th>Voo</th><th>Companhia</th><th>Origem</th><th>Destino</th><th>Partida</th><th>Passageiros</th><th>Total</th></tr></thead><tbody><tr th:each="sv : ${solicitacao.voosSolicitados}"><td th:text="${sv.ordemVoo == 1 ? 'Ida' : 'Volta'}"></td><td th:text="${sv.voo.numeroVoo}"></td><td th:text="${sv.voo.companhia.nome}"></td><td th:text="${sv.voo.aeroportoOrigem.codigoIata}"></td><td th:text="${sv.voo.aeroportoDestino.codigoIata}"></td><td th:text="${#temporals.format(sv.voo.dataHoraPartida, 'dd/MM/yyyy HH:mm')}"></td><td th:text="${sv.qtdPassageiros}"></td><td th:text="${'R$ ' + #numbers.formatDecimal(sv.precoTotal, 1, 'POINT', 2, 'COMMA')}"></td></tr></tbody></table></div></section>
+</main><footer class="rodape"><p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p></footer>
+</body></html>

@@ -1,117 +1,81 @@
-# Brasil Travel — Sistema de Reserva de Voos
+# BrasilTravel Aéreo
 
-> Aplicação para gerenciamento de voos, passageiros e reservas, desenvolvida para a disciplina de Banco de Dados II.
+Sistema web de agência de viagens aéreas nacionais desenvolvido em Java Spring Boot, Thymeleaf e PostgreSQL.
 
-![Java 17](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?logo=springboot&logoColor=white)
-![Railway](https://img.shields.io/badge/Railway-Deploy-0B0D0D?logo=railway&logoColor=white)
+## Execução local
 
-## Sobre o projeto
+1. Criar o banco PostgreSQL local:
 
-O **Brasil Travel** é uma aplicação de banco de dados relacional voltada à gestão de voos nacionais, desenvolvida como Fase 1 do projeto da disciplina de Banco de Dados II.
-
-O sistema permite consultar voos disponíveis, gerenciar passageiros e companhias aéreas, e registrar reservas, associando passageiro e voo, além de armazenar informações próprias de cada reserva, como assento e status.
-
-A modelagem completa (esquema conceitual e dicionário de dados) está disponível no documento em [`/docs`](https://docs.google.com/document/d/1ZimgIUvIiVJFccTN62y9IjEm_NN7Z66J/edit).
-
-```mermaid
-flowchart LR
-    A[Aplicação] -->|JDBC / JPA| B[(Banco de Dados Relacional)]
+```sql
+CREATE DATABASE brasiltravel_aereo;
 ```
 
-## Funcionalidades
+2. Ajustar `src/main/resources/application.properties` com usuário e senha do PostgreSQL.
 
-| Categoria | Operações |
-| --- | --- |
-| Voos | Cadastro, consulta, atualização e remoção |
-| Passageiros | Cadastro, consulta, atualização e remoção |
-| Companhias aéreas | Cadastro, consulta, atualização e remoção |
-| Reservas (associativa) | Efetuar reserva, atualizar status, cancelar |
+3. Rodar o projeto:
 
-## Tecnologias
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-| Camada | Tecnologia |
-| --- | --- |
-| Linguagem | Java 17 |
-| Framework | Spring Boot (Web, Data JPA) |
-| Banco de dados | MySQL (relacional) |
-| Gerenciador de dependências | Maven |
-| Hospedagem | Railway |
-
-## Estrutura do projeto
-
-A estrutura final está sendo definida pela equipe durante o desenvolvimento. Em linhas gerais:
+4. Acessar:
 
 ```text
-.
-├── backend/     # Aplicação Spring Boot
-├── database/    # Backup do banco de dados (.sql)
-├── docs/        # Documento de modelagem (esquema conceitual e dicionário de dados)
-└── README.md
+http://localhost:8080
 ```
 
-Esta seção será atualizada assim que a estrutura de pastas do backend estiver definida.
+## Usuários de acesso
 
-## Como executar
+Administrador:
 
-### Pré-requisitos
+```text
+admin@brasiltravel.com
+Admin123
+```
 
-- [Java 17+](https://adoptium.net/)
-- [Maven](https://maven.apache.org/)
-- MySQL (local ou instância no Railway)
+Cliente:
 
-### Passo a passo
+```text
+cliente@brasiltravel.com
+Cliente123
+```
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/usuario/brasil-travel.git
-   cd brasil-travel
-   ```
+## Observações de dados
 
-2. Crie o banco de dados local e restaure o backup:
-   ```bash
-   mysql -u seu_usuario -p -e "CREATE DATABASE brasil_travel;"
-   mysql -u seu_usuario -p brasil_travel < database/backup.sql
-   ```
+Por padrão, a aplicação recria dados comerciais de demonstração ao iniciar:
 
-3. Configure a conexão em `application.properties` (ou variáveis de ambiente equivalentes):
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/brasil_travel
-   spring.datasource.username=seu_usuario
-   spring.datasource.password=sua_senha
-   ```
+- destinos brasileiros;
+- aeroportos nacionais;
+- companhias aéreas;
+- voos futuros de 27/09/2026 a 27/10/2026;
+- solicitações históricas distribuídas de forma proporcional de 01/01/2026 a 27/09/2026;
+- capacidades comerciais reduzidas nos voos para tornar o relatório de ocupação mais útil na demonstração.
 
-4. Execute a aplicação:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+Os relatórios foram pensados para usar o período histórico de 01/01/2026 a 27/09/2026.
 
-5. Acesse conforme a interface implementada (modo texto ou `http://localhost:8080`, dependendo da definição final da equipe).
+## Relatórios disponíveis
 
-> Este passo a passo será revisado assim que a estrutura definitiva do backend estiver pronta.
+- Viagens por companhia aérea;
+- Ocupação e disponibilidade de voos;
+- Demanda por destino.
 
-## Deploy (Railway)
+Todos os relatórios possuem filtro obrigatório por status do pedido, com valor padrão `Finalizada`, além de período, companhia aérea e múltiplos aeroportos de origem/destino.
 
-| Variável | Valor |
-| --- | --- |
-| `DB_URL` | `jdbc:mysql://<host-interno-railway>:3306/railway` |
-| `DB_USERNAME` | fornecido pelo serviço de banco no Railway |
-| `DB_PASSWORD` | fornecido pelo serviço de banco no Railway |
-| `PORT` | `8080` |
 
-Aplicação publicada: [https://brasil-travel.up.railway.app](https://brasil-travel.up.railway.app) *(atualizar com o link real)*
+## Backup/dump do PostgreSQL
 
-## Vídeo de demonstração
+Para gerar um dump do banco local pelo PowerShell:
 
-[https://youtu.be/codigo-do-video](https://youtu.be/codigo-do-video) *(atualizar com o link real)*
+```powershell
+pg_dump -U postgres -d brasiltravel_aereo -F p -f brasiltravel_aereo_dump.sql
+```
 
-## Equipe
+Para restaurar em outro ambiente:
 
-| Integrante |
-| --- |
-| Isadora Pimenta de Oliveira |
-| Luís Felipe dos Anjos de Carvalho |
+```powershell
+psql -U postgres -d brasiltravel_aereo -f brasiltravel_aereo_dump.sql
+```
 
-**Professora:** Rebeca Schroeder Freitas
-**Disciplina:** Banco de Dados II
-**Curso/Turma:** TADS 2026/02
+## Ajuste de desempenho - Gerenciamento de voos
+
+A listagem administrativa de voos exibe apenas voos futuros e usa paginação de 20 registros por página, preservando os filtros de aeroporto de origem e destino. Isso evita travamentos visuais quando o banco está povoado com muitas combinações de voos.

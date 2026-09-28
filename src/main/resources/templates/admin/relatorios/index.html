@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao linha-titulo">
+        <div>
+            <p class="tag">Administração</p>
+            <h1>Relatórios</h1>
+            <p class="texto-apoio">Relatórios consolidados para análise comercial e operacional da agência. Escolha uma opção, defina os filtros e gere o resultado.</p>
+        </div>
+        <a class="btn btn-secundario" href="/admin">Voltar ao painel</a>
+    </div>
+
+    <section class="opcoes-relatorios">
+        <article class="card card-relatorio" th:classappend="${tipo == 'companhia'} ? ' selecionado' : ''">
+            <a th:href="@{/admin/relatorios(tipo='companhia')}"><h3>Viagens por companhia</h3><p>Solicitações, passageiros, preço médio e receita total por companhia aérea.</p></a>
+        </article>
+        <article class="card card-relatorio" th:classappend="${tipo == 'ocupacao'} ? ' selecionado' : ''">
+            <a th:href="@{/admin/relatorios(tipo='ocupacao')}"><h3>Ocupação e disponibilidade</h3><p>Capacidade, passageiros reservados, vagas restantes, ocupação e receita por voo.</p></a>
+        </article>
+        <article class="card card-relatorio" th:classappend="${tipo == 'destino'} ? ' selecionado' : ''">
+            <a th:href="@{/admin/relatorios(tipo='destino')}"><h3>Demanda por destino</h3><p>Solicitações, passageiros, ticket médio e receita por destino de chegada.</p></a>
+        </article>
+    </section>
+
+    <section class="bloco-tabela" th:if="${tipo != null}">
+        <h2>Filtros do relatório</h2>
+        <form class="formulario filtro-relatorio" method="get" action="/admin/relatorios">
+            <input type="hidden" name="tipo" th:value="${tipo}">
+            <input type="hidden" name="gerar" value="1">
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label>Início</label>
+                    <input type="date" name="inicio" th:value="${inicio}" required>
+                </div>
+                <div class="campo">
+                    <label>Fim</label>
+                    <input type="date" name="fim" th:value="${fim}" required>
+                </div>
+                <div class="campo">
+                    <label>Status do pedido</label>
+                    <select name="status" required>
+                        <option th:each="s : ${statusOpcoes}" th:value="${s.name()}" th:selected="${statusSelecionado == s}" th:text="${s.descricao}"></option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Companhia aérea</label>
+                    <select name="idCompanhia">
+                        <option value="">Todas</option>
+                        <option th:each="c : ${companhias}" th:value="${c.idCompanhia}" th:selected="${idCompanhia == c.idCompanhia}" th:text="${c.nome}"></option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Aeroportos de origem</label>
+                    <select name="idOrigens" multiple size="6">
+                        <option th:each="a : ${aeroportos}" th:value="${a.idAeroporto}" th:selected="${idOrigens != null and idOrigens.contains(a.idAeroporto)}" th:text="${a.codigoIata + ' - ' + a.destino.nomeCompleto}"></option>
+                    </select>
+                    <small>Segure Ctrl para selecionar mais de um. Sem seleção = todos.</small>
+                </div>
+                <div class="campo">
+                    <label>Aeroportos de destino</label>
+                    <select name="idDestinosAeroporto" multiple size="6">
+                        <option th:each="a : ${aeroportos}" th:value="${a.idAeroporto}" th:selected="${idDestinosAeroporto != null and idDestinosAeroporto.contains(a.idAeroporto)}" th:text="${a.codigoIata + ' - ' + a.destino.nomeCompleto}"></option>
+                    </select>
+                    <small>Segure Ctrl para selecionar mais de um. Sem seleção = todos.</small>
+                </div>
+                <div class="campo campo-checkbox">
+                    <label class="check-label"><input type="checkbox" name="agruparMes" value="true" th:checked="${agruparMes}"> Separar mês a mês</label>
+                </div>
+            </div>
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Gerar relatório</button>
+                <button th:if="${gerado}" class="btn btn-secundario botao-formulario" type="submit" formaction="/admin/relatorios/csv">Baixar CSV</button>
+            </div>
+        </form>
+        <p class="texto-cinza" th:if="${!gerado}">Selecione os filtros e clique em Gerar relatório para visualizar os dados. O status padrão é Finalizada.</p>
+    </section>
+
+    <section class="bloco-tabela bloco-relatorio" th:if="${gerado and tipo == 'companhia'}">
+        <h2>Viagens por companhia aérea</h2>
+        <div class="tabela-responsiva"><table>
+            <thead><tr><th th:if="${agruparMes}">Período</th><th>Companhia</th><th>Solicitações</th><th>Passageiros</th><th>Preço médio</th><th>Receita total</th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${porCompanhia}">
+                <td th:if="${agruparMes}" th:text="${r.periodo}"></td>
+                <td th:text="${r.companhia}"></td>
+                <td th:text="${r.quantidadeSolicitacoes}"></td>
+                <td th:text="${r.quantidadePassageiros}"></td>
+                <td th:text="${'R$ ' + #numbers.formatDecimal(r.precoMedio, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td th:text="${'R$ ' + #numbers.formatDecimal(r.receitaTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(porCompanhia)}"><td th:colspan="${agruparMes ? 6 : 5}">Sem dados para os filtros selecionados.</td></tr>
+            </tbody>
+        </table></div>
+    </section>
+
+    <section class="bloco-tabela bloco-relatorio" th:if="${gerado and tipo == 'ocupacao'}">
+        <h2>Ocupação e disponibilidade de voos</h2>
+        <div class="tabela-responsiva"><table>
+            <thead><tr><th th:if="${agruparMes}">Período</th><th>Voo</th><th>Companhia</th><th>Origem</th><th>Destino</th><th>Data do voo</th><th>Classe</th><th>Capacidade</th><th>Passageiros</th><th>Vagas</th><th>Ocupação</th><th>Receita</th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${porOcupacao}">
+                <td th:if="${agruparMes}" th:text="${r.periodo}"></td>
+                <td th:text="${r.numeroVoo}"></td>
+                <td th:text="${r.companhia}"></td>
+                <td th:text="${r.origem}"></td>
+                <td th:text="${r.destino}"></td>
+                <td th:text="${#temporals.format(r.dataHoraPartida, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${r.classe}"></td>
+                <td th:text="${r.capacidadeTotal}"></td>
+                <td th:text="${r.passageirosReservados}"></td>
+                <td th:text="${r.vagasDisponiveis}"></td>
+                <td th:text="${#numbers.formatDecimal(r.taxaOcupacao, 1, 'POINT', 2, 'COMMA') + '%'}"></td>
+                <td th:text="${'R$ ' + #numbers.formatDecimal(r.receitaTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(porOcupacao)}"><td th:colspan="${agruparMes ? 12 : 11}">Sem dados para os filtros selecionados.</td></tr>
+            </tbody>
+        </table></div>
+    </section>
+
+    <section class="bloco-tabela bloco-relatorio" th:if="${gerado and tipo == 'destino'}">
+        <h2>Demanda por destino</h2>
+        <div class="tabela-responsiva"><table>
+            <thead><tr><th th:if="${agruparMes}">Período</th><th>Destino</th><th>Solicitações</th><th>Passageiros</th><th>Ticket médio</th><th>Receita total</th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${porDestino}">
+                <td th:if="${agruparMes}" th:text="${r.periodo}"></td>
+                <td th:text="${r.destino}"></td>
+                <td th:text="${r.quantidadeSolicitacoes}"></td>
+                <td th:text="${r.quantidadePassageiros}"></td>
+                <td th:text="${'R$ ' + #numbers.formatDecimal(r.ticketMedio, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td th:text="${'R$ ' + #numbers.formatDecimal(r.receitaTotal, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(porDestino)}"><td th:colspan="${agruparMes ? 6 : 5}">Sem dados para os filtros selecionados.</td></tr>
+            </tbody>
+        </table></div>
+    </section>
+</main>
+<footer class="rodape"><p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p></footer>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="topo" th:fragment="topo">
+    <div class="container nav">
+        <a class="logo" href="/">BrasilTravel Aéreo</a>
+
+        <nav class="menu" th:if="${usuarioEhAdmin}">
+            <a href="/admin"
+               th:classappend="${requestUri != null and #strings.startsWith(requestUri, '/admin') and !#strings.startsWith(requestUri, '/admin/solicitacoes') ? ' ativo' : ''}">Painel Administração</a>
+            <a href="/admin/solicitacoes"
+               th:classappend="${requestUri != null and #strings.startsWith(requestUri, '/admin/solicitacoes') ? ' ativo' : ''}">Solicitações</a>
+            <a href="/logout">Sair</a>
+        </nav>
+
+        <nav class="menu" th:if="${usuarioEstaLogado and !usuarioEhAdmin}">
+            <a href="/" th:classappend="${requestUri == '/' ? ' ativo' : ''}">Início</a>
+            <a href="/cliente/solicitacoes"
+               th:classappend="${requestUri != null and #strings.startsWith(requestUri, '/cliente/solicitacoes') ? ' ativo' : ''}">Solicitações</a>
+            <a href="/logout">Sair</a>
+        </nav>
+
+        <nav class="menu" th:if="${!usuarioEstaLogado}">
+            <a href="/" th:classappend="${requestUri == '/' ? ' ativo' : ''}">Início</a>
+            <a href="/login" th:classappend="${requestUri == '/login' ? ' ativo' : ''}">Login</a>
+            <a href="/cadastro" th:classappend="${requestUri == '/cadastro' ? ' ativo' : ''}">Cadastro</a>
+        </nav>
+    </div>
+</header>
+</body>
+</html>

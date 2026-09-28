@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Solicitação - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Solicitações</p>
+        <h1>Nova solicitação de viagem</h1>
+        <p class="texto-apoio">Selecione aeroporto de partida, destino e data. O sistema mostra apenas datas e voos disponíveis para a combinação escolhida.</p>
+
+        <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+
+        <form class="formulario" method="post" th:action="@{/cliente/solicitacoes/salvar}" th:object="${form}">
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label for="idAeroportoPartida">Aeroporto de partida</label>
+                    <select id="idAeroportoPartida" th:field="*{idAeroportoPartida}" required>
+                        <option value="">Selecione</option>
+                        <option th:each="aeroporto : ${aeroportos}"
+                                th:value="${aeroporto.idAeroporto}"
+                                th:attr="data-destino-cidade=${aeroporto.destino.idDestino}"
+                                th:text="${aeroporto.codigoIata + ' - ' + aeroporto.destino.nomeCompleto}"></option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('idAeroportoPartida')}" th:errors="*{idAeroportoPartida}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="idDestinoPrincipal">Destino da viagem</label>
+                    <select id="idDestinoPrincipal" th:field="*{idDestinoPrincipal}" required>
+                        <option value="">Selecione</option>
+                        <option th:each="destino : ${destinos}" th:value="${destino.idDestino}" th:text="${destino.nomeCompleto}"></option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('idDestinoPrincipal')}" th:errors="*{idDestinoPrincipal}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="dataIda">Data de ida</label>
+                    <select id="dataIda" th:field="*{dataIda}" required
+                            th:attr="data-selecionada=${form.dataIda != null ? #temporals.format(form.dataIda, 'yyyy-MM-dd') : ''}">
+                        <option value="">Selecione partida e destino para ver as datas</option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('dataIda')}" th:errors="*{dataIda}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="dataVolta">Data de volta <span class="texto-cinza">(opcional)</span></label>
+                    <select id="dataVolta" th:field="*{dataVolta}"
+                            th:attr="data-selecionada=${form.dataVolta != null ? #temporals.format(form.dataVolta, 'yyyy-MM-dd') : ''}">
+                        <option value="">Sem voo de volta</option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('dataVolta')}" th:errors="*{dataVolta}"></small>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="idVooIda">Voo de ida</label>
+                    <select id="idVooIda" th:field="*{idVooIda}" required>
+                        <option value="">Selecione partida, destino e data de ida</option>
+                        <option th:each="voo : ${voos}"
+                                th:value="${voo.idVoo}"
+                                th:attr="data-origem-aeroporto=${voo.aeroportoOrigem.idAeroporto},data-destino-aeroporto=${voo.aeroportoDestino.idAeroporto},data-origem-cidade=${voo.aeroportoOrigem.destino.idDestino},data-destino-cidade=${voo.aeroportoDestino.destino.idDestino},data-data=${#temporals.format(voo.dataHoraPartida, 'yyyy-MM-dd')}"
+                                th:text="${voo.numeroVoo + ' | ' + voo.companhia.nome + ' | ' + voo.aeroportoOrigem.codigoIata + ' → ' + voo.aeroportoDestino.codigoIata + ' | ' + #temporals.format(voo.dataHoraPartida, 'dd/MM/yyyy HH:mm') + ' | Vagas: ' + voo.vagasDisponiveis + ' | R$ ' + #numbers.formatDecimal(voo.precoBase, 1, 'POINT', 2, 'COMMA')}">
+                            AD4101
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('idVooIda')}" th:errors="*{idVooIda}"></small>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="idVooVolta">Voo de volta <span class="texto-cinza">(opcional)</span></label>
+                    <select id="idVooVolta" th:field="*{idVooVolta}">
+                        <option value="">Sem voo de volta</option>
+                        <option th:each="voo : ${voos}"
+                                th:value="${voo.idVoo}"
+                                th:attr="data-origem-aeroporto=${voo.aeroportoOrigem.idAeroporto},data-destino-aeroporto=${voo.aeroportoDestino.idAeroporto},data-origem-cidade=${voo.aeroportoOrigem.destino.idDestino},data-destino-cidade=${voo.aeroportoDestino.destino.idDestino},data-data=${#temporals.format(voo.dataHoraPartida, 'yyyy-MM-dd')}"
+                                th:text="${voo.numeroVoo + ' | ' + voo.companhia.nome + ' | ' + voo.aeroportoOrigem.codigoIata + ' → ' + voo.aeroportoDestino.codigoIata + ' | ' + #temporals.format(voo.dataHoraPartida, 'dd/MM/yyyy HH:mm') + ' | Vagas: ' + voo.vagasDisponiveis + ' | R$ ' + #numbers.formatDecimal(voo.precoBase, 1, 'POINT', 2, 'COMMA')}">
+                            AD4102
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('idVooVolta')}" th:errors="*{idVooVolta}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="qtdPassageiros">Quantidade de passageiros</label>
+                    <input id="qtdPassageiros" type="number" min="1" step="1" th:field="*{qtdPassageiros}">
+                    <small th:if="${#fields.hasErrors('qtdPassageiros')}" th:errors="*{qtdPassageiros}"></small>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" rows="4" th:field="*{observacoes}" placeholder="Ex.: preferência de horário ou informação importante para o atendimento."></textarea>
+                </div>
+            </div>
+
+            <div class="info-sac">
+                Cancelamentos de solicitações confirmadas devem ser solicitados pelo SAC: <span th:text="${telefoneSac}">(47) 3433-0000</span>.
+            </div>
+
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Enviar solicitação</button>
+                <a class="btn btn-secundario" href="/cliente/solicitacoes">Voltar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape"><p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p></footer>
+
+<script>
+    const aeroportoPartida = document.getElementById('idAeroportoPartida');
+    const destinoPrincipal = document.getElementById('idDestinoPrincipal');
+    const ida = document.getElementById('dataIda');
+    const volta = document.getElementById('dataVolta');
+    const vooIda = document.getElementById('idVooIda');
+    const vooVolta = document.getElementById('idVooVolta');
+
+    const hojeReferencia = '2026-09-27';
+    const textoData = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' });
+
+    function cidadeDaPartida() {
+        const option = aeroportoPartida.options[aeroportoPartida.selectedIndex];
+        return option ? option.dataset.destinoCidade : '';
+    }
+
+    function formatarData(valor) {
+        if (!valor) return '';
+        const [ano, mes, dia] = valor.split('-').map(Number);
+        return textoData.format(new Date(Date.UTC(ano, mes - 1, dia)));
+    }
+
+    function datasUnicas(opcoes) {
+        return [...new Set(opcoes.map(option => option.dataset.data).filter(Boolean))].sort();
+    }
+
+    function repopularDatas(select, datas, textoInicial, permitirVazio) {
+        const anterior = select.value || select.dataset.selecionada || '';
+        select.innerHTML = '';
+
+        const inicial = document.createElement('option');
+        inicial.value = '';
+        inicial.textContent = textoInicial;
+        select.appendChild(inicial);
+
+        datas.forEach(data => {
+            const option = document.createElement('option');
+            option.value = data;
+            option.textContent = formatarData(data);
+            if (data === anterior) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+
+        if (!permitirVazio && select.options.length === 2 && !select.value) {
+            select.selectedIndex = 1;
+        }
+        if (select.value && !datas.includes(select.value)) {
+            select.value = '';
+        }
+        select.dataset.selecionada = '';
+    }
+
+    function atualizarDestinosDisponiveis() {
+        const cidadeOrigem = cidadeDaPartida();
+        Array.from(destinoPrincipal.options).forEach(option => {
+            if (!option.value) return;
+            const bloqueado = cidadeOrigem && option.value === cidadeOrigem;
+            option.disabled = bloqueado;
+            option.hidden = bloqueado;
+        });
+        if (destinoPrincipal.value && destinoPrincipal.options[destinoPrincipal.selectedIndex].disabled) {
+            destinoPrincipal.value = '';
+        }
+    }
+
+    function opcoesIdaCompativeis() {
+        const aeroportoSelecionado = aeroportoPartida.value;
+        const destinoSelecionado = destinoPrincipal.value;
+        return Array.from(vooIda.options).filter(option => option.value
+            && aeroportoSelecionado
+            && destinoSelecionado
+            && option.dataset.origemAeroporto === aeroportoSelecionado
+            && option.dataset.destinoCidade === destinoSelecionado
+            && option.dataset.data >= hojeReferencia);
+    }
+
+    function opcoesVoltaCompativeis() {
+        const aeroportoSelecionado = aeroportoPartida.value;
+        const destinoSelecionado = destinoPrincipal.value;
+        const dataIda = ida.value;
+        const vooIdaSelecionado = vooIda.value;
+        return Array.from(vooVolta.options).filter(option => option.value
+            && aeroportoSelecionado
+            && destinoSelecionado
+            && dataIda
+            && option.dataset.origemCidade === destinoSelecionado
+            && option.dataset.destinoAeroporto === aeroportoSelecionado
+            && option.value !== vooIdaSelecionado
+            && option.dataset.data >= dataIda);
+    }
+
+    function atualizarDatasIda() {
+        const datas = datasUnicas(opcoesIdaCompativeis());
+        repopularDatas(ida, datas, datas.length ? 'Selecione a data de ida' : 'Sem datas disponíveis para esta partida e destino', false);
+        atualizarDatasVolta();
+        filtrarVoos();
+    }
+
+    function atualizarDatasVolta() {
+        const datas = datasUnicas(opcoesVoltaCompativeis());
+        repopularDatas(volta, datas, datas.length ? 'Sem voo de volta' : 'Sem datas de volta disponíveis', true);
+        filtrarVoos();
+    }
+
+    function filtrarVoos() {
+        const aeroportoSelecionado = aeroportoPartida.value;
+        const destinoSelecionado = destinoPrincipal.value;
+        const dataIda = ida.value;
+        const dataVolta = volta.value;
+        const vooIdaSelecionado = vooIda.value;
+
+        Array.from(vooIda.options).forEach(option => {
+            if (!option.value) return;
+            const mostrar = aeroportoSelecionado
+                && destinoSelecionado
+                && dataIda
+                && option.dataset.origemAeroporto === aeroportoSelecionado
+                && option.dataset.destinoCidade === destinoSelecionado
+                && option.dataset.data === dataIda;
+            option.hidden = !mostrar;
+            option.disabled = !mostrar;
+        });
+
+        if (vooIda.value && vooIda.options[vooIda.selectedIndex].disabled) {
+            vooIda.value = '';
+        }
+
+        Array.from(vooVolta.options).forEach(option => {
+            if (!option.value) return;
+            const mostrar = aeroportoSelecionado
+                && destinoSelecionado
+                && dataVolta
+                && option.dataset.origemCidade === destinoSelecionado
+                && option.dataset.destinoAeroporto === aeroportoSelecionado
+                && option.value !== vooIdaSelecionado
+                && option.dataset.data === dataVolta;
+            option.hidden = !mostrar;
+            option.disabled = !mostrar;
+        });
+
+        if (vooVolta.value && vooVolta.options[vooVolta.selectedIndex].disabled) {
+            vooVolta.value = '';
+        }
+    }
+
+    aeroportoPartida.addEventListener('change', () => {
+        atualizarDestinosDisponiveis();
+        atualizarDatasIda();
+    });
+    destinoPrincipal.addEventListener('change', atualizarDatasIda);
+    ida.addEventListener('change', () => {
+        atualizarDatasVolta();
+        filtrarVoos();
+    });
+    volta.addEventListener('change', filtrarVoos);
+    vooIda.addEventListener('change', () => {
+        atualizarDatasVolta();
+        filtrarVoos();
+    });
+
+    atualizarDestinosDisponiveis();
+    atualizarDatasIda();
+</script>
+</body>
+</html>

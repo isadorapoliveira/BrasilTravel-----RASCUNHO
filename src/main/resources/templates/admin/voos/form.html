@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modoEdicao ? 'Editar voo' : 'Novo voo'} + ' - BrasilTravel Aéreo'">Voo - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Gestão administrativa</p>
+        <h1 th:text="${modoEdicao ? 'Editar voo' : 'Novo voo'}">Novo voo</h1>
+        <p class="texto-apoio">Cadastre a companhia, origem, destino, horários, classe, vagas e preço base do voo.</p>
+
+        <form class="formulario" th:action="@{/admin/voos/salvar}" th:object="${voo}" method="post">
+            <input type="hidden" th:field="*{idVoo}">
+
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label for="numeroVoo">Número do voo</label>
+                    <input id="numeroVoo" type="text" th:field="*{numeroVoo}" maxlength="12" placeholder="Ex.: AD4101">
+                    <small th:if="${#fields.hasErrors('numeroVoo')}" th:errors="*{numeroVoo}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="companhia">Companhia aérea</label>
+                    <select id="companhia" th:field="*{companhia.idCompanhia}">
+                        <option value="">Selecione</option>
+                        <option th:each="companhiaOpcao : ${companhias}"
+                                th:value="${companhiaOpcao.idCompanhia}"
+                                th:text="${companhiaOpcao.nome + ' (' + companhiaOpcao.codigoIata + ')'}">
+                            Azul Linhas Aéreas
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('companhia')}" th:errors="*{companhia}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="aeroportoOrigem">Aeroporto de origem</label>
+                    <select id="aeroportoOrigem" th:field="*{aeroportoOrigem.idAeroporto}">
+                        <option value="">Selecione</option>
+                        <option th:each="aeroportoOpcao : ${aeroportos}"
+                                th:value="${aeroportoOpcao.idAeroporto}"
+                                th:text="${aeroportoOpcao.codigoIata + ' - ' + aeroportoOpcao.destino.nomeCompleto}">
+                            JOI - Joinville
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('aeroportoOrigem')}" th:errors="*{aeroportoOrigem}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="aeroportoDestino">Aeroporto de destino</label>
+                    <select id="aeroportoDestino" th:field="*{aeroportoDestino.idAeroporto}">
+                        <option value="">Selecione</option>
+                        <option th:each="aeroportoOpcao : ${aeroportos}"
+                                th:value="${aeroportoOpcao.idAeroporto}"
+                                th:text="${aeroportoOpcao.codigoIata + ' - ' + aeroportoOpcao.destino.nomeCompleto}">
+                            GRU - São Paulo
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('aeroportoDestino')}" th:errors="*{aeroportoDestino}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="dataHoraPartida">Data/hora de partida</label>
+                    <input id="dataHoraPartida" type="datetime-local" th:field="*{dataHoraPartida}">
+                    <small th:if="${#fields.hasErrors('dataHoraPartida')}" th:errors="*{dataHoraPartida}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="dataHoraChegada">Data/hora de chegada</label>
+                    <input id="dataHoraChegada" type="datetime-local" th:field="*{dataHoraChegada}">
+                    <small th:if="${#fields.hasErrors('dataHoraChegada')}" th:errors="*{dataHoraChegada}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="classe">Classe</label>
+                    <select id="classe" th:field="*{classe}">
+                        <option th:each="classeOpcao : ${classes}"
+                                th:value="${classeOpcao}"
+                                th:text="${classeOpcao}">ECONOMICA</option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('classe')}" th:errors="*{classe}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="capacidadeTotal">Capacidade total</label>
+                    <input id="capacidadeTotal" type="number" th:field="*{capacidadeTotal}" min="1" step="1">
+                    <small>Capacidade comercial disponibilizada para venda pela agência.</small>
+                    <small th:if="${#fields.hasErrors('capacidadeTotal')}" th:errors="*{capacidadeTotal}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="vagasDisponiveis">Vagas disponíveis</label>
+                    <input id="vagasDisponiveis" type="number" th:field="*{vagasDisponiveis}" min="0" step="1">
+                    <small th:if="${#fields.hasErrors('vagasDisponiveis')}" th:errors="*{vagasDisponiveis}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="precoBase">Preço base</label>
+                    <input id="precoBase" type="number" th:field="*{precoBase}" min="0" step="0.01" placeholder="Ex.: 480.00">
+                    <small th:if="${#fields.hasErrors('precoBase')}" th:errors="*{precoBase}"></small>
+                </div>
+
+                <div class="campo campo-checkbox">
+                    <label>Status</label>
+                    <label class="check-label">
+                        <input type="checkbox" th:field="*{ativo}">
+                        Voo ativo
+                    </label>
+                </div>
+            </div>
+
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Salvar voo</button>
+                <a class="btn btn-secundario" href="/admin/voos">Voltar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+
+<script>
+    const origem = document.getElementById('aeroportoOrigem');
+    const destino = document.getElementById('aeroportoDestino');
+    const partida = document.getElementById('dataHoraPartida');
+    const chegada = document.getElementById('dataHoraChegada');
+
+    function bloquearMesmoAeroporto() {
+        const origemSelecionada = origem.value;
+        Array.from(destino.options).forEach(option => {
+            option.disabled = origemSelecionada && option.value === origemSelecionada;
+        });
+        if (destino.value && destino.value === origemSelecionada) {
+            destino.value = '';
+        }
+    }
+
+    function atualizarChegadaMinima() {
+        if (partida.value) {
+            chegada.min = partida.value;
+            if (chegada.value && chegada.value < partida.value) {
+                chegada.value = partida.value;
+            }
+        }
+    }
+
+    origem.addEventListener('change', bloquearMesmoAeroporto);
+    partida.addEventListener('change', atualizarChegadaMinima);
+    bloquearMesmoAeroporto();
+    atualizarChegadaMinima();
+</script>
+</body>
+</html>
