@@ -129,7 +129,7 @@ public class DadosIniciaisConfig implements CommandLineRunner {
                 companhia("BrasilTravel Connect", "BT", "https://www.brasiltravel.com.br", "(47) 3433-0000")
         };
 
-        List<Voo> voosHistoricos = gerarMalhaAerea(aeroportos, companhias, INICIO_HISTORICO, FIM_HISTORICO, 3, false);
+        List<Voo> voosHistoricos = gerarMalhaAerea(aeroportos, companhias, INICIO_HISTORICO, FIM_HISTORICO, 7, false);
         List<Voo> voosFuturos = gerarMalhaAerea(aeroportos, companhias, DATA_REFERENCIA, DATA_REFERENCIA.plusDays(30), 1, true);
         gerarSolicitacoesDemonstracao(clientes, voosHistoricos);
 
@@ -141,41 +141,54 @@ public class DadosIniciaisConfig implements CommandLineRunner {
     private List<Voo> gerarMalhaAerea(Aeroporto[] aeroportos, CompanhiaAerea[] companhias, LocalDate inicio, LocalDate fim, int intervaloDias, boolean ativo) {
         List<Voo> voos = new ArrayList<>();
         for (LocalDate data = inicio; !data.isAfter(fim); data = data.plusDays(intervaloDias)) {
-            for (int i = 0; i < aeroportos.length; i++) {
-                for (int j = 0; j < aeroportos.length; j++) {
-                    if (i == j) {
-                        continue;
-                    }
-                    CompanhiaAerea companhia = companhias[Math.floorMod(i * 31 + j * 7 + data.getDayOfYear(), companhias.length)];
-                    int hora = 6 + Math.floorMod(i * 2 + j + data.getDayOfMonth(), 13);
-                    int minuto = Math.floorMod(i + j + data.getDayOfMonth(), 2) * 30;
-                    int duracaoHoras = 1 + Math.abs(i - j) % 4;
-                    int duracaoMinutos = Math.floorMod(i + j, 3) * 15;
-                    BigDecimal preco = BigDecimal.valueOf(260 + (Math.abs(i - j) * 52L) + (data.getMonthValue() * 14L) + (ativo ? 45L : 0L));
-                    ClasseVoo classe = (sequencialVoo % 8 == 0) ? ClasseVoo.EXECUTIVA : ClasseVoo.ECONOMICA;
-                    // Capacidade operacional exibida pelo site: representa a cota comercial
-                    // disponível para a agência, não a capacidade física total da aeronave.
-                    // Mantida propositalmente baixa para tornar o relatório de ocupação útil na demonstração.
-                    int capacidadeTotal = (classe == ClasseVoo.EXECUTIVA)
-                            ? 6 + Math.floorMod(i + j + data.getDayOfYear(), 3)
-                            : 8 + Math.floorMod(i * 3 + j * 5 + data.getDayOfYear(), 7);
-                    int vagas = capacidadeTotal;
-                    String numero = companhia.getCodigoIata() + String.format("%05d", sequencialVoo);
+            int[][] rotas = rotasComerciais();
+            for (int[] rota : rotas) {
+                int i = rota[0];
+                int j = rota[1];
+                CompanhiaAerea companhia = companhias[Math.floorMod(i * 31 + j * 7 + data.getDayOfYear(), companhias.length)];
+                int hora = 6 + Math.floorMod(i * 2 + j + data.getDayOfMonth(), 13);
+                int minuto = Math.floorMod(i + j + data.getDayOfMonth(), 2) * 30;
+                int duracaoHoras = 1 + Math.abs(i - j) % 4;
+                int duracaoMinutos = Math.floorMod(i + j, 3) * 15;
+                BigDecimal preco = BigDecimal.valueOf(260 + (Math.abs(i - j) * 52L) + (data.getMonthValue() * 14L) + (ativo ? 45L : 0L));
+                ClasseVoo classe = (sequencialVoo % 8 == 0) ? ClasseVoo.EXECUTIVA : ClasseVoo.ECONOMICA;
+                // Capacidade operacional exibida pelo site: representa a cota comercial
+                // disponível para a agência, não a capacidade física total da aeronave.
+                int capacidadeTotal = (classe == ClasseVoo.EXECUTIVA)
+                        ? 6 + Math.floorMod(i + j + data.getDayOfYear(), 3)
+                        : 8 + Math.floorMod(i * 3 + j * 5 + data.getDayOfYear(), 7);
+                int vagas = capacidadeTotal;
+                String numero = companhia.getCodigoIata() + String.format("%05d", sequencialVoo);
 
-                    voos.add(voo(companhia, aeroportos[i], aeroportos[j], numero,
-                            data.atTime(hora, minuto),
-                            data.atTime(hora, minuto).plusHours(duracaoHoras).plusMinutes(duracaoMinutos),
-                            preco.toString(), capacidadeTotal, vagas, classe, ativo));
-                    sequencialVoo++;
-                }
+                voos.add(voo(companhia, aeroportos[i], aeroportos[j], numero,
+                        data.atTime(hora, minuto),
+                        data.atTime(hora, minuto).plusHours(duracaoHoras).plusMinutes(duracaoMinutos),
+                        preco.toString(), capacidadeTotal, vagas, classe, ativo));
+                sequencialVoo++;
             }
         }
         return voos;
     }
 
+    private int[][] rotasComerciais() {
+        // Malha demonstrativa controlada: mantém muitos voos para filtros e relatórios,
+        // mas evita milhares de inserts no deploy gratuito. Os índices seguem o vetor de aeroportos.
+        return new int[][] {
+                {0, 1}, {1, 0}, // JOI <-> GRU
+                {0, 3}, {3, 0}, // JOI <-> GIG
+                {1, 3}, {3, 1}, // GRU <-> GIG
+                {1, 5}, {5, 1}, // GRU <-> SSA
+                {1, 7}, {7, 1}, // GRU <-> BSB
+                {2, 4}, {4, 2}, // CGH <-> SDU
+                {1, 8}, {8, 1}, // GRU <-> REC
+                {1, 9}, {9, 1}, // GRU <-> FOR
+                {10, 1}, {1, 10} // CWB <-> GRU
+        };
+    }
+
     private void gerarSolicitacoesDemonstracao(Usuario[] clientes, List<Voo> voosHistoricos) {
         int criadas = 0;
-        for (LocalDate data = INICIO_HISTORICO; !data.isAfter(FIM_HISTORICO.minusDays(6)); data = data.plusDays(3)) {
+        for (LocalDate data = INICIO_HISTORICO; !data.isAfter(FIM_HISTORICO.minusDays(6)); data = data.plusDays(7)) {
             final LocalDate dataAtual = data;
             List<Voo> voosDoDia = voosHistoricos.stream()
                     .filter(v -> v.getDataHoraPartida().toLocalDate().equals(dataAtual))
@@ -184,7 +197,7 @@ public class DadosIniciaisConfig implements CommandLineRunner {
                 continue;
             }
 
-            for (int n = 0; n < 5; n++) {
+            for (int n = 0; n < 4; n++) {
                 Voo ida = voosDoDia.get(Math.floorMod(data.getDayOfYear() * 13 + n * 29 + criadas * 7, voosDoDia.size()));
                 Voo volta = encontrarVolta(voosHistoricos, ida);
                 if (volta == null) {
