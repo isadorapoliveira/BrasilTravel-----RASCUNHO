@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Companhias - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao linha-titulo">
+        <div>
+            <p class="tag">Gestão administrativa</p>
+            <h1>Gerenciar companhias aéreas</h1>
+            <p class="texto-apoio">Cadastro das companhias que operam os voos disponíveis na agência.</p>
+        </div>
+        <a class="btn btn-principal" href="/admin/companhias/novo">Nova companhia</a>
+    </div>
+
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+
+    <section class="bloco-tabela">
+        <h2>Companhias cadastradas</h2>
+
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Site</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="companhia : ${companhias}">
+                        <td th:text="${companhia.idCompanhia}">1</td>
+                        <td><strong th:text="${companhia.codigoIata}">AD</strong></td>
+                        <td th:text="${companhia.nome}">Azul Linhas Aéreas</td>
+                        <td>
+                            <a th:if="${companhia.site != null and !companhia.site.isBlank()}" th:href="${companhia.site}" th:text="${companhia.site}" target="_blank">site</a>
+                            <span th:if="${companhia.site == null or companhia.site.isBlank()}">-</span>
+                        </td>
+                        <td th:text="${companhia.telefone ?: '-'}">0800</td>
+                        <td>
+                            <span class="status ativo" th:if="${companhia.ativo}">Ativa</span>
+                            <span class="status inativo" th:if="${!companhia.ativo}">Inativa</span>
+                        </td>
+                        <td>
+                            <div class="acoes-tabela">
+                                <a class="btn btn-menor btn-editar" th:href="@{/admin/companhias/editar/{id}(id=${companhia.idCompanhia})}">Editar</a>
+
+                                <form th:action="@{/admin/companhias/alternar-status/{id}(id=${companhia.idCompanhia})}" method="post">
+                                    <button class="btn btn-menor btn-neutro" type="submit" th:text="${companhia.ativo ? 'Inativar' : 'Ativar'}">Inativar</button>
+                                </form>
+
+                                <form th:action="@{/admin/companhias/excluir/{id}(id=${companhia.idCompanhia})}" method="post" onsubmit="return confirm('Confirma a exclusão desta companhia aérea?');">
+                                    <button class="btn btn-menor btn-perigo" type="submit">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(companhias)}">
+                        <td colspan="7">Nenhuma companhia aérea cadastrada.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

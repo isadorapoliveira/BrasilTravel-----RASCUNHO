@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Destinos - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao linha-titulo">
+        <div>
+            <p class="tag">Gestão administrativa</p>
+            <h1>Gerenciar destinos</h1>
+            <p class="texto-apoio">Cadastro das cidades atendidas pela BrasilTravel Aéreo. Estes registros alimentam aeroportos, voos e solicitações de viagem.</p>
+        </div>
+        <a class="btn btn-principal" href="/admin/destinos/novo">Novo destino</a>
+    </div>
+
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+
+    <section class="bloco-tabela">
+        <h2>Destinos cadastrados</h2>
+
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                        <th>País</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="destino : ${destinos}">
+                        <td th:text="${destino.idDestino}">1</td>
+                        <td th:text="${destino.cidade}">Joinville</td>
+                        <td th:text="${destino.estado}">SC</td>
+                        <td th:text="${destino.pais}">Brasil</td>
+                        <td th:text="${destino.descricao}">Descrição</td>
+                        <td>
+                            <span class="status ativo" th:if="${destino.ativo}">Ativo</span>
+                            <span class="status inativo" th:if="${!destino.ativo}">Inativo</span>
+                        </td>
+                        <td>
+                            <div class="acoes-tabela">
+                                <a class="btn btn-menor btn-editar" th:href="@{/admin/destinos/editar/{id}(id=${destino.idDestino})}">Editar</a>
+
+                                <form th:action="@{/admin/destinos/alternar-status/{id}(id=${destino.idDestino})}" method="post">
+                                    <button class="btn btn-menor btn-neutro" type="submit" th:text="${destino.ativo ? 'Inativar' : 'Ativar'}">Inativar</button>
+                                </form>
+
+                                <form th:action="@{/admin/destinos/excluir/{id}(id=${destino.idDestino})}" method="post" onsubmit="return confirm('Confirma a exclusão deste destino?');">
+                                    <button class="btn btn-menor btn-perigo" type="submit">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(destinos)}">
+                        <td colspan="7">Nenhum destino cadastrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

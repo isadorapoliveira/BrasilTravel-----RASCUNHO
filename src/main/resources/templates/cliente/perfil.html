@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao">
+        <p class="tag">Área do cliente</p>
+        <h1>Meu perfil</h1>
+        <p class="texto-apoio">Dados vinculados à conta utilizada para criar solicitações de viagem aérea.</p>
+    </div>
+
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+
+    <section class="cards cards-perfil">
+        <article class="card card-perfil">
+            <h3 th:text="${usuario.nome}">Nome do usuário</h3>
+            <dl class="lista-dados">
+                <dt>E-mail</dt>
+                <dd th:text="${usuario.email}">email</dd>
+                <dt>CPF</dt>
+                <dd th:text="${usuario.cpf}">cpf</dd>
+                <dt>Telefone</dt>
+                <dd th:text="${usuario.telefone ?: 'Não informado'}">telefone</dd>
+                <dt>Tipo de usuário</dt>
+                <dd th:text="${usuario.tipoUsuario}">CLIENTE</dd>
+                <dt>Cadastro</dt>
+                <dd th:text="${#temporals.format(usuario.dataCadastro, 'dd/MM/yyyy HH:mm')}">data</dd>
+            </dl>
+            <div class="acoes">
+                <a class="btn btn-principal" href="/cliente/perfil/editar">Editar cadastro</a>
+                <a class="btn btn-secundario" href="/cliente/solicitacoes">Minhas solicitações</a>
+            </div>
+        </article>
+
+        <article class="card card-proxima-etapa">
+            <h3>Solicitações de viagem</h3>
+            <p>Crie novas solicitações, acompanhe status e visualize os voos vinculados ao seu pedido.</p>
+            <div class="acoes">
+                <a class="btn btn-principal" href="/cliente/solicitacoes/nova">Nova solicitação</a>
+            </div>
+        </article>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

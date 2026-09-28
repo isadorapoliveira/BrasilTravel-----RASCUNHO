@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico do Banco - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header class="topo">
+    <div class="container nav">
+        <a class="logo" href="/">BrasilTravel Aéreo</a>
+
+        <nav class="menu">
+            <a href="/">Início</a>
+            <a href="/diagnostico">Diagnóstico BD</a>
+            <a th:if="${!usuarioEstaLogado}" href="/login">Login</a>
+            <a th:if="${!usuarioEstaLogado}" href="/cadastro">Cadastro</a>
+            <a th:if="${usuarioEstaLogado and !usuarioEhAdmin}" href="/cliente/perfil">Meu Perfil</a>
+            <a th:if="${usuarioEhAdmin}" href="/admin">Painel Admin</a>
+            <a th:if="${usuarioEstaLogado}" href="/logout">Sair</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container secao">
+    <div class="titulo-secao">
+        <p class="tag">Etapa 2</p>
+        <h1>Diagnóstico do banco relacional</h1>
+        <p class="texto-apoio">
+            Esta tela existe apenas para conferir se as entidades JPA, os repositories,
+            as tabelas e os dados iniciais foram carregados corretamente no PostgreSQL.
+        </p>
+    </div>
+
+    <section class="cards painel-contadores">
+        <article class="card"><h3 th:text="${qtdUsuarios}">0</h3><p>Usuários</p></article>
+        <article class="card"><h3 th:text="${qtdDestinos}">0</h3><p>Destinos</p></article>
+        <article class="card"><h3 th:text="${qtdAeroportos}">0</h3><p>Aeroportos</p></article>
+        <article class="card"><h3 th:text="${qtdCompanhias}">0</h3><p>Companhias aéreas</p></article>
+        <article class="card"><h3 th:text="${qtdVoos}">0</h3><p>Voos</p></article>
+        <article class="card"><h3 th:text="${qtdSolicitacoes}">0</h3><p>Solicitações de viagem</p></article>
+        <article class="card"><h3 th:text="${qtdSolicitacoesVoos}">0</h3><p>Voos em solicitações</p></article>
+    </section>
+
+    <section class="bloco-tabela">
+        <h2>Voos carregados para teste</h2>
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Companhia</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Partida</th>
+                    <th>Classe</th>
+                    <th>Vagas</th>
+                    <th>Preço</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="voo : ${voos}">
+                    <td th:text="${voo.numeroVoo}">AD4101</td>
+                    <td th:text="${voo.companhia.nome}">Azul</td>
+                    <td th:text="${voo.aeroportoOrigem.codigoIata}">JOI</td>
+                    <td th:text="${voo.aeroportoDestino.codigoIata}">GRU</td>
+                    <td th:text="${#temporals.format(voo.dataHoraPartida, 'dd/MM/yyyy HH:mm')}">10/10/2026 08:30</td>
+                    <td th:text="${voo.classe}">ECONOMICA</td>
+                    <td th:text="${voo.vagasDisponiveis}">32</td>
+                    <td th:text="${#numbers.formatCurrency(voo.precoBase)}">R$ 480,00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

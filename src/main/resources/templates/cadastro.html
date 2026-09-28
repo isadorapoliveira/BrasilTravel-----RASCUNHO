@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Cadastro de cliente</p>
+        <h1>Criar conta</h1>
+        <p class="texto-apoio">Cadastre-se para solicitar viagens aéreas e acompanhar o atendimento da agência.</p>
+
+        <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+
+        <form th:action="@{/cadastro}" th:object="${cadastroForm}" method="post" class="formulario grid-formulario">
+            <div class="campo campo-duplo">
+                <label for="nome">Nome completo</label>
+                <input id="nome" type="text" th:field="*{nome}" placeholder="Nome completo">
+                <small th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" th:field="*{email}" placeholder="seu@email.com">
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="cpf">CPF</label>
+                <input id="cpf" type="text" th:field="*{cpf}" placeholder="000.000.000-00">
+                <small th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="telefone">Telefone</label>
+                <input id="telefone" type="text" th:field="*{telefone}" placeholder="(00) 00000-0000">
+            </div>
+
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input id="senha" type="password" th:field="*{senha}" placeholder="Mínimo de 6 caracteres">
+                <small th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="confirmacaoSenha">Confirmar senha</label>
+                <input id="confirmacaoSenha" type="password" th:field="*{confirmacaoSenha}" placeholder="Repita a senha">
+                <small th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}"></small>
+            </div>
+
+            <div class="campo-duplo">
+                <button type="submit" class="btn btn-principal botao-formulario">Cadastrar e entrar</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

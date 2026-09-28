@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modoEdicao ? 'Editar destino' : 'Novo destino'} + ' - BrasilTravel Aéreo'">Destino - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Gestão administrativa</p>
+        <h1 th:text="${modoEdicao ? 'Editar destino' : 'Novo destino'}">Novo destino</h1>
+        <p class="texto-apoio">Informe os dados da cidade atendida pela agência.</p>
+
+        <form class="formulario" th:action="@{/admin/destinos/salvar}" th:object="${destino}" method="post">
+            <input type="hidden" th:field="*{idDestino}">
+
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label for="cidade">Cidade</label>
+                    <input id="cidade" type="text" th:field="*{cidade}" placeholder="Ex.: Joinville">
+                    <small th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="estado">Estado</label>
+                    <input id="estado" type="text" th:field="*{estado}" maxlength="2" placeholder="Ex.: SC">
+                    <small th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="pais">País</label>
+                    <input id="pais" type="text" th:field="*{pais}" placeholder="Brasil">
+                    <small th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></small>
+                </div>
+
+                <div class="campo campo-checkbox">
+                    <label>Status</label>
+                    <label class="check-label">
+                        <input type="checkbox" th:field="*{ativo}">
+                        Destino ativo
+                    </label>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" th:field="*{descricao}" rows="5" placeholder="Resumo da cidade ou observação administrativa."></textarea>
+                </div>
+            </div>
+
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Salvar destino</button>
+                <a class="btn btn-secundario" href="/admin/destinos">Voltar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

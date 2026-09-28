@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main>
+    <section class="hero">
+        <div class="container hero-conteudo">
+            <div class="hero-texto">
+                <p class="tag">Agência de viagens aéreas nacionais</p>
+                <h1>Planeje sua próxima viagem aérea pelo Brasil.</h1>
+                <p>
+                    Consulte destinos atendidos, envie sua solicitação de viagem e acompanhe
+                    o atendimento diretamente pela sua área de solicitações.
+                </p>
+
+                <div class="acoes" th:if="${!usuarioEstaLogado}">
+                    <a class="btn btn-principal" href="/cadastro">Criar conta</a>
+                    <a class="btn btn-secundario" href="/login">Entrar</a>
+                </div>
+
+                <div class="acoes" th:if="${usuarioEstaLogado and !usuarioEhAdmin}">
+                    <a class="btn btn-principal" href="/cliente/solicitacoes">Minhas solicitações</a>
+                    <a class="btn btn-secundario" href="/cliente/solicitacoes/nova">Nova solicitação</a>
+                </div>
+
+                <div class="acoes" th:if="${usuarioEhAdmin}">
+                    <a class="btn btn-principal" href="/admin">Painel administrativo</a>
+                    <a class="btn btn-secundario" href="/admin/solicitacoes">Atender solicitações</a>
+                </div>
+            </div>
+
+            <aside class="card-destaque">
+                <h2>Atendimento personalizado</h2>
+                <p>
+                    Escolha um destino, informe a quantidade de passageiros e envie a solicitação
+                    para análise da equipe BrasilTravel Aéreo.
+                </p>
+            </aside>
+        </div>
+    </section>
+
+    <section class="container secao">
+        <div class="titulo-secao">
+            <p class="tag">Destinos atendidos</p>
+            <h2>Destinos nacionais em destaque</h2>
+        </div>
+
+        <div class="cards cards-destinos-home">
+            <article class="card card-destino" th:each="destino : ${destinosDestaque}">
+                <h3 th:text="${destino.nomeCompleto}">Rio de Janeiro - RJ</h3>
+                <p th:text="${destino.descricao}">Destino nacional atendido pela agência.</p>
+                <a class="btn btn-menor btn-secundario" th:href="@{/cliente/solicitacoes/nova(idDestino=${destino.idDestino})}">Solicitar viagem</a>
+            </article>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

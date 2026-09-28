@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Voos - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao linha-titulo">
+        <div>
+            <p class="tag">Gestão administrativa</p>
+            <h1>Gerenciar voos</h1>
+            <p class="texto-apoio">Cadastro dos voos, rotas, datas, vagas e preços disponíveis para solicitação dos clientes.</p>
+        </div>
+        <a class="btn btn-principal" href="/admin/voos/novo">Novo voo</a>
+    </div>
+
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+
+    <section class="bloco-tabela filtro-admin filtro-voos-admin">
+        <h2>Filtrar voos futuros</h2>
+        <form class="formulario" method="get" action="/admin/voos">
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label>Aeroporto de origem</label>
+                    <select name="idOrigem">
+                        <option value="">Todos</option>
+                        <option th:each="a : ${aeroportos}" th:value="${a.idAeroporto}" th:selected="${idOrigem == a.idAeroporto}" th:text="${a.codigoIata + ' - ' + a.destino.nomeCompleto}"></option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label>Aeroporto de destino</label>
+                    <select name="idDestino">
+                        <option value="">Todos</option>
+                        <option th:each="a : ${aeroportos}" th:value="${a.idAeroporto}" th:selected="${idDestino == a.idAeroporto}" th:text="${a.codigoIata + ' - ' + a.destino.nomeCompleto}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Filtrar</button>
+                <a class="btn btn-secundario" href="/admin/voos">Limpar filtros</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="bloco-tabela">
+        <h2>Voos futuros cadastrados</h2>
+        <p class="texto-cinza">A lista de gerenciamento exibe apenas voos de 27/09/2026 em diante.</p>
+
+        <div class="controle-paginacao" th:if="${totalRegistros > 0}">
+            <p th:text="${'Exibindo ' + inicioExibicao + ' a ' + fimExibicao + ' de ' + totalRegistros + ' voos futuros.'}">Exibindo 1 a 20 de 120 voos.</p>
+            <div class="paginacao">
+                <a class="btn btn-menor btn-neutro"
+                   th:classappend="${!temPaginaAnterior} ? ' desabilitado'"
+                   th:href="${temPaginaAnterior} ? @{/admin/voos(pagina=${paginaAnterior}, idOrigem=${idOrigem}, idDestino=${idDestino})} : '#'"><span>Anterior</span></a>
+                <span class="pagina-atual" th:text="${'Página ' + (paginaAtual + 1) + ' de ' + totalPaginas}">Página 1 de 5</span>
+                <a class="btn btn-menor btn-neutro"
+                   th:classappend="${!temProximaPagina} ? ' desabilitado'"
+                   th:href="${temProximaPagina} ? @{/admin/voos(pagina=${proximaPagina}, idOrigem=${idOrigem}, idDestino=${idDestino})} : '#'"><span>Próxima</span></a>
+            </div>
+        </div>
+
+        <div class="scroll-topo" data-scroll-target="voos-admin"><div></div></div>
+        <div class="tabela-responsiva" id="voos-admin">
+            <table class="tabela-voos-admin">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Número</th>
+                        <th>Companhia</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Partida</th>
+                        <th>Chegada</th>
+                        <th>Classe</th>
+                        <th>Capacidade</th>
+                        <th>Vagas</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="voo : ${voos}">
+                        <td th:text="${voo.idVoo}">1</td>
+                        <td><strong th:text="${voo.numeroVoo}">AD4101</strong></td>
+                        <td th:text="${voo.companhia.nome}">Azul</td>
+                        <td>
+                            <strong th:text="${voo.aeroportoOrigem.codigoIata}">JOI</strong><br>
+                            <span th:text="${voo.aeroportoOrigem.destino.nomeCompleto}">Joinville - SC</span>
+                        </td>
+                        <td>
+                            <strong th:text="${voo.aeroportoDestino.codigoIata}">GRU</strong><br>
+                            <span th:text="${voo.aeroportoDestino.destino.nomeCompleto}">São Paulo - SP</span>
+                        </td>
+                        <td th:text="${#temporals.format(voo.dataHoraPartida, 'dd/MM/yyyy HH:mm')}">10/10/2026 08:30</td>
+                        <td th:text="${#temporals.format(voo.dataHoraChegada, 'dd/MM/yyyy HH:mm')}">10/10/2026 09:45</td>
+                        <td th:text="${voo.classe}">ECONOMICA</td>
+                        <td th:text="${voo.capacidadeTotal}">12</td>
+                        <td th:text="${voo.vagasDisponiveis}">32</td>
+                        <td th:text="${'R$ ' + #numbers.formatDecimal(voo.precoBase, 1, 'POINT', 2, 'COMMA')}">R$ 480,00</td>
+                        <td>
+                            <span class="status ativo" th:if="${voo.ativo}">Ativo</span>
+                            <span class="status inativo" th:if="${!voo.ativo}">Inativo</span>
+                        </td>
+                        <td>
+                            <div class="acoes-tabela">
+                                <a class="btn btn-menor btn-editar" th:href="@{/admin/voos/editar/{id}(id=${voo.idVoo})}">Editar</a>
+
+                                <form th:action="@{/admin/voos/alternar-status/{id}(id=${voo.idVoo})}" method="post">
+                                    <button class="btn btn-menor btn-neutro" type="submit" th:text="${voo.ativo ? 'Inativar' : 'Ativar'}">Inativar</button>
+                                </form>
+
+                                <form th:action="@{/admin/voos/excluir/{id}(id=${voo.idVoo})}" method="post" onsubmit="return confirm('Confirma a exclusão deste voo?');">
+                                    <button class="btn btn-menor btn-perigo" type="submit">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(voos)}">
+                        <td colspan="13">Nenhum voo cadastrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="controle-paginacao controle-paginacao-inferior" th:if="${totalRegistros > 0}">
+            <p th:text="${'20 voos por página. Total encontrado: ' + totalRegistros + '.'}">20 voos por página. Total encontrado: 120.</p>
+            <div class="paginacao">
+                <a class="btn btn-menor btn-neutro"
+                   th:classappend="${!temPaginaAnterior} ? ' desabilitado'"
+                   th:href="${temPaginaAnterior} ? @{/admin/voos(pagina=${paginaAnterior}, idOrigem=${idOrigem}, idDestino=${idDestino})} : '#'"><span>Anterior</span></a>
+                <span class="pagina-atual" th:text="${'Página ' + (paginaAtual + 1) + ' de ' + totalPaginas}">Página 1 de 5</span>
+                <a class="btn btn-menor btn-neutro"
+                   th:classappend="${!temProximaPagina} ? ' desabilitado'"
+                   th:href="${temProximaPagina} ? @{/admin/voos(pagina=${proximaPagina}, idOrigem=${idOrigem}, idDestino=${idDestino})} : '#'"><span>Próxima</span></a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+
+<script>
+(function () {
+    const topo = document.querySelector('.scroll-topo[data-scroll-target="voos-admin"]');
+    const tabela = document.getElementById('voos-admin');
+    if (!topo || !tabela) return;
+    const conteudoTopo = topo.querySelector('div');
+    function ajustarLargura() {
+        const table = tabela.querySelector('table');
+        if (table) conteudoTopo.style.width = table.scrollWidth + 'px';
+    }
+    ajustarLargura();
+    window.addEventListener('resize', ajustarLargura);
+    topo.addEventListener('scroll', function () { tabela.scrollLeft = topo.scrollLeft; });
+    tabela.addEventListener('scroll', function () { topo.scrollLeft = tabela.scrollLeft; });
+})();
+</script>
+
+</body>
+</html>

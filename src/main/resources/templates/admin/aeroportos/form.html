@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${modoEdicao ? 'Editar aeroporto' : 'Novo aeroporto'} + ' - BrasilTravel Aéreo'">Aeroporto - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Gestão administrativa</p>
+        <h1 th:text="${modoEdicao ? 'Editar aeroporto' : 'Novo aeroporto'}">Novo aeroporto</h1>
+        <p class="texto-apoio">Informe os dados do aeroporto e vincule-o a uma cidade/destino cadastrada.</p>
+
+        <form class="formulario" th:action="@{/admin/aeroportos/salvar}" th:object="${aeroporto}" method="post">
+            <input type="hidden" th:field="*{idAeroporto}">
+
+            <div class="grid-formulario">
+                <div class="campo">
+                    <label for="codigoIata">Código IATA</label>
+                    <input id="codigoIata" type="text" th:field="*{codigoIata}" maxlength="3" placeholder="Ex.: JOI">
+                    <small th:if="${#fields.hasErrors('codigoIata')}" th:errors="*{codigoIata}"></small>
+                </div>
+
+                <div class="campo">
+                    <label for="destino">Cidade/Destino</label>
+                    <select id="destino" th:field="*{destino.idDestino}">
+                        <option value="">Selecione</option>
+                        <option th:each="destinoOpcao : ${destinos}"
+                                th:value="${destinoOpcao.idDestino}"
+                                th:text="${destinoOpcao.nomeCompleto + ' - ' + destinoOpcao.pais}">
+                            Joinville - SC - Brasil
+                        </option>
+                    </select>
+                    <small th:if="${#fields.hasErrors('destino')}" th:errors="*{destino}"></small>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="nome">Nome do aeroporto</label>
+                    <input id="nome" type="text" th:field="*{nome}" placeholder="Ex.: Aeroporto de Joinville">
+                    <small th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
+                </div>
+
+                <div class="campo campo-duplo">
+                    <label for="endereco">Endereço</label>
+                    <input id="endereco" type="text" th:field="*{endereco}" placeholder="Endereço ou observação de localização">
+                </div>
+
+                <div class="campo campo-checkbox">
+                    <label>Status</label>
+                    <label class="check-label">
+                        <input type="checkbox" th:field="*{ativo}">
+                        Aeroporto ativo
+                    </label>
+                </div>
+            </div>
+
+            <div class="acoes-formulario">
+                <button class="btn btn-principal botao-formulario" type="submit">Salvar aeroporto</button>
+                <a class="btn btn-secundario" href="/admin/aeroportos">Voltar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

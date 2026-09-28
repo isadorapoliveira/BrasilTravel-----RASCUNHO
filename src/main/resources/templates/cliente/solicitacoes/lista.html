@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Solicitações - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<header th:replace="~{fragments/layout :: topo}"></header>
+<main class="container secao">
+    <div class="titulo-secao linha-titulo"><div><p class="tag">Área do cliente</p><h1>Minhas solicitações</h1><p class="texto-apoio">Acompanhe as viagens solicitadas e seus respectivos status de atendimento.</p></div><a class="btn btn-principal" href="/cliente/solicitacoes/nova">Nova solicitação</a></div>
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div><div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+    <section class="bloco-tabela"><h2>Solicitações registradas</h2><div class="tabela-responsiva"><table><thead><tr><th>ID</th><th>Destino</th><th>Datas</th><th>Status</th><th>Valor</th><th>Criação</th><th>Ações</th></tr></thead><tbody>
+        <tr th:each="sol : ${solicitacoes}">
+            <td th:text="${sol.idSolicitacao}">1</td><td th:text="${sol.destinoPrincipal.nomeCompleto}">São Paulo - SP</td>
+            <td><span th:text="${#temporals.format(sol.dataIda, 'dd/MM/yyyy')}"></span><span th:if="${sol.dataVolta != null}" th:text="${' a ' + #temporals.format(sol.dataVolta, 'dd/MM/yyyy')}"></span></td>
+            <td><span class="status" th:classappend="${sol.statusSolicitacao.name() == 'CANCELADA' ? ' inativo' : ' ativo'}" th:text="${sol.statusSolicitacao.descricao}">AGUARDANDO</span></td>
+            <td th:text="${'R$ ' + #numbers.formatDecimal(sol.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+            <td th:text="${#temporals.format(sol.dataCriacao, 'dd/MM/yyyy HH:mm')}">data</td>
+            <td><div class="acoes-tabela"><a class="btn btn-menor btn-secundario" th:href="@{/cliente/solicitacoes/{id}(id=${sol.idSolicitacao})}">Detalhes</a><form th:if="${sol.statusSolicitacao.name() != 'CANCELADA' and sol.statusSolicitacao.name() != 'CONFIRMADA' and sol.statusSolicitacao.name() != 'FINALIZADA'}" th:action="@{/cliente/solicitacoes/cancelar/{id}(id=${sol.idSolicitacao})}" method="post" onsubmit="return confirm('Cancelar esta solicitação?');"><button class="btn btn-menor btn-perigo" type="submit">Cancelar</button></form></div></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(solicitacoes)}"><td colspan="7">Nenhuma solicitação criada.</td></tr>
+    </tbody></table></div>
+        <p class="info-sac">Solicitações confirmadas ou finalizadas não podem ser canceladas pelo site. Para alterações, entre em contato com o SAC: (47) 3433-0000.</p>
+    </section>
+</main><footer class="rodape"><p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p></footer>
+</body></html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Aeroportos - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao">
+    <div class="titulo-secao linha-titulo">
+        <div>
+            <p class="tag">Gestão administrativa</p>
+            <h1>Gerenciar aeroportos</h1>
+            <p class="texto-apoio">Cadastro dos aeroportos utilizados como origem e destino dos voos da agência.</p>
+        </div>
+        <a class="btn btn-principal" href="/admin/aeroportos/novo">Novo aeroporto</a>
+    </div>
+
+    <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+    <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+
+    <section class="bloco-tabela">
+        <h2>Aeroportos cadastrados</h2>
+
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>IATA</th>
+                        <th>Nome</th>
+                        <th>Cidade/Destino</th>
+                        <th>Endereço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="aeroporto : ${aeroportos}">
+                        <td th:text="${aeroporto.idAeroporto}">1</td>
+                        <td><strong th:text="${aeroporto.codigoIata}">JOI</strong></td>
+                        <td th:text="${aeroporto.nome}">Aeroporto de Joinville</td>
+                        <td th:text="${aeroporto.destino.nomeCompleto}">Joinville - SC</td>
+                        <td th:text="${aeroporto.endereco}">Endereço</td>
+                        <td>
+                            <span class="status ativo" th:if="${aeroporto.ativo}">Ativo</span>
+                            <span class="status inativo" th:if="${!aeroporto.ativo}">Inativo</span>
+                        </td>
+                        <td>
+                            <div class="acoes-tabela">
+                                <a class="btn btn-menor btn-editar" th:href="@{/admin/aeroportos/editar/{id}(id=${aeroporto.idAeroporto})}">Editar</a>
+
+                                <form th:action="@{/admin/aeroportos/alternar-status/{id}(id=${aeroporto.idAeroporto})}" method="post">
+                                    <button class="btn btn-menor btn-neutro" type="submit" th:text="${aeroporto.ativo ? 'Inativar' : 'Ativar'}">Inativar</button>
+                                </form>
+
+                                <form th:action="@{/admin/aeroportos/excluir/{id}(id=${aeroporto.idAeroporto})}" method="post" onsubmit="return confirm('Confirma a exclusão deste aeroporto?');">
+                                    <button class="btn btn-menor btn-perigo" type="submit">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(aeroportos)}">
+                        <td colspan="7">Nenhum aeroporto cadastrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario">
+        <p class="tag">Acesso</p>
+        <h1>Entrar no sistema</h1>
+        <p class="texto-apoio">Informe seu e-mail e senha para acessar a área do cliente ou o painel administrativo.</p>
+
+        <div class="alerta sucesso" th:if="${sucesso}" th:text="${sucesso}"></div>
+        <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+
+        <form th:action="@{/login}" th:object="${loginForm}" method="post" class="formulario">
+            <div class="campo">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" th:field="*{email}" placeholder="seu@email.com">
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input id="senha" type="password" th:field="*{senha}" placeholder="Digite sua senha">
+                <small th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></small>
+            </div>
+
+            <button type="submit" class="btn btn-principal botao-formulario">Entrar</button>
+        </form>
+</section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>

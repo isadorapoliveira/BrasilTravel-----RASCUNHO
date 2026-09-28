@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - BrasilTravel Aéreo</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<header th:replace="~{fragments/layout :: topo}"></header>
+
+<main class="container secao pagina-formulario">
+    <section class="card-formulario card-formulario-largo">
+        <p class="tag">Área do cliente</p>
+        <h1>Editar cadastro</h1>
+        <p class="texto-apoio">Atualize os dados básicos da sua conta.</p>
+
+        <div class="alerta erro" th:if="${erro}" th:text="${erro}"></div>
+
+        <form th:action="@{/cliente/perfil/editar}" th:object="${perfilForm}" method="post" class="formulario grid-formulario">
+            <div class="campo campo-duplo">
+                <label for="nome">Nome completo</label>
+                <input id="nome" type="text" th:field="*{nome}">
+                <small th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" th:field="*{email}">
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="cpf">CPF</label>
+                <input id="cpf" type="text" th:field="*{cpf}">
+                <small th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></small>
+            </div>
+
+            <div class="campo">
+                <label for="telefone">Telefone</label>
+                <input id="telefone" type="text" th:field="*{telefone}">
+            </div>
+
+            <div class="campo-duplo acoes-formulario">
+                <button type="submit" class="btn btn-principal botao-formulario">Salvar alterações</button>
+                <a class="btn btn-secundario" href="/cliente/perfil">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer class="rodape">
+    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+</footer>
+
+</body>
+</html>
