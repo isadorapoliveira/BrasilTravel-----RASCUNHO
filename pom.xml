@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>br.com.brasiltravel</groupId>
-    <artifactId>brasiltravel-aereo</artifactId>
+    <artifactId>brasiltravel</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>brasiltravel-aereo</name>
-    <description>Sistema BrasilTravel Aéreo para Banco de Dados II</description>
+    <name>brasiltravel</name>
+    <description>Sistema BrasilTravel para Banco de Dados II</description>
 
     <properties>
         <java.version>21</java.version>
