@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Destinos - BrasilTravel Aéreo</title>
+    <title>Gerenciar Destinos - BrasilTravel</title>
     <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -15,7 +15,7 @@
         <div>
             <p class="tag">Gestão administrativa</p>
             <h1>Gerenciar destinos</h1>
-            <p class="texto-apoio">Cadastro das cidades atendidas pela BrasilTravel Aéreo. Estes registros alimentam aeroportos, voos e solicitações de viagem.</p>
+            <p class="texto-apoio">Cadastro das cidades atendidas pela BrasilTravel. Estes registros alimentam aeroportos, voos e solicitações de viagem.</p>
         </div>
         <a class="btn btn-principal" href="/admin/destinos/novo">Novo destino</a>
     </div>
@@ -33,7 +33,6 @@
                         <th>ID</th>
                         <th>Cidade</th>
                         <th>Estado</th>
-                        <th>País</th>
                         <th>Descrição</th>
                         <th>Status</th>
                         <th>Ações</th>
@@ -44,7 +43,6 @@
                         <td th:text="${destino.idDestino}">1</td>
                         <td th:text="${destino.cidade}">Joinville</td>
                         <td th:text="${destino.estado}">SC</td>
-                        <td th:text="${destino.pais}">Brasil</td>
                         <td th:text="${destino.descricao}">Descrição</td>
                         <td>
                             <span class="status ativo" th:if="${destino.ativo}">Ativo</span>
@@ -74,7 +72,7 @@
 </main>
 
 <footer class="rodape">
-    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+    <p>© 2026 BrasilTravel — Projeto Banco de Dados II</p>
 </footer>
 
 </body>

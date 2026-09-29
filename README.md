@@ -1,4 +1,4 @@
-# BrasilTravel Aéreo
+# BrasilTravel
 
 Sistema web de agência de viagens aéreas nacionais desenvolvido em Java Spring Boot, Thymeleaf e PostgreSQL.
 
@@ -7,7 +7,7 @@ Sistema web de agência de viagens aéreas nacionais desenvolvido em Java Spring
 1. Criar o banco PostgreSQL local:
 
 ```sql
-CREATE DATABASE brasiltravel_aereo;
+CREATE DATABASE brasiltravel;
 ```
 
 2. Ajustar `src/main/resources/application.properties` com usuário e senha do PostgreSQL.
@@ -67,13 +67,13 @@ Todos os relatórios possuem filtro obrigatório por status do pedido, com valor
 Para gerar um dump do banco local pelo PowerShell:
 
 ```powershell
-pg_dump -U postgres -d brasiltravel_aereo -F p -f brasiltravel_aereo_dump.sql
+pg_dump -U postgres -d brasiltravel -F p -f brasiltravel_dump.sql
 ```
 
 Para restaurar em outro ambiente:
 
 ```powershell
-psql -U postgres -d brasiltravel_aereo -f brasiltravel_aereo_dump.sql
+psql -U postgres -d brasiltravel -f brasiltravel_dump.sql
 ```
 
 ## Ajuste de desempenho - Gerenciamento de voos

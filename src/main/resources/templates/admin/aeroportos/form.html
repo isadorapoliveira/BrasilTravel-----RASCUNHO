@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${modoEdicao ? 'Editar aeroporto' : 'Novo aeroporto'} + ' - BrasilTravel Aéreo'">Aeroporto - BrasilTravel Aéreo</title>
+    <title th:text="${modoEdicao ? 'Editar aeroporto' : 'Novo aeroporto'} + ' - BrasilTravel'">Aeroporto - BrasilTravel</title>
     <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -32,8 +32,8 @@
                         <option value="">Selecione</option>
                         <option th:each="destinoOpcao : ${destinos}"
                                 th:value="${destinoOpcao.idDestino}"
-                                th:text="${destinoOpcao.nomeCompleto + ' - ' + destinoOpcao.pais}">
-                            Joinville - SC - Brasil
+                                th:text="${destinoOpcao.nomeCompleto}">
+                            Joinville - SC
                         </option>
                     </select>
                     <small th:if="${#fields.hasErrors('destino')}" th:errors="*{destino}"></small>
@@ -68,7 +68,7 @@
 </main>
 
 <footer class="rodape">
-    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+    <p>© 2026 BrasilTravel — Projeto Banco de Dados II</p>
 </footer>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${modoEdicao ? 'Editar destino' : 'Novo destino'} + ' - BrasilTravel Aéreo'">Destino - BrasilTravel Aéreo</title>
+    <title th:text="${modoEdicao ? 'Editar destino' : 'Novo destino'} + ' - BrasilTravel'">Destino - BrasilTravel</title>
     <link rel="stylesheet" th:href="@{/css/estilo.css}">
 </head>
 <body>
@@ -32,12 +32,6 @@
                     <small th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></small>
                 </div>
 
-                <div class="campo">
-                    <label for="pais">País</label>
-                    <input id="pais" type="text" th:field="*{pais}" placeholder="Brasil">
-                    <small th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></small>
-                </div>
-
                 <div class="campo campo-checkbox">
                     <label>Status</label>
                     <label class="check-label">
@@ -61,7 +55,7 @@
 </main>
 
 <footer class="rodape">
-    <p>© 2026 BrasilTravel Aéreo — Projeto Banco de Dados II</p>
+    <p>© 2026 BrasilTravel — Projeto Banco de Dados II</p>
 </footer>
 
 </body>
